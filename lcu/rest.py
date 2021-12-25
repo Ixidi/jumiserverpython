@@ -17,12 +17,24 @@ class LcuRest:
     def post(self, endpoint):
         return requests.post(self._make_url(endpoint), auth=self._auth, verify="riotgames.pem")
 
-    def put(self, endpoint, data):
-        return requests.put(self._make_url(endpoint), auth=self._auth, verify="riotgames.pem", json=data)
+    def put(self, endpoint, json):
+        return requests.put(self._make_url(endpoint), auth=self._auth, verify="riotgames.pem", json=json)
 
-    def choose_position_put(self, first, second):
+    def patch(self, endpoint, json):
+        return requests.patch(self._make_url(endpoint), auth=self._auth, verify="riotgames.pem", json=json)
+
+    def lobby_choose_position_put(self, first, second):
         return self.put("/lol-lobby/v2/lobby/members/localMember/position-preferences",
                         {"firstPreference": first, "secondPreference": second})
 
-    def ready_check_accept_post(self):
+    def queue_ready_check_accept_post(self):
         return self.post("/lol-matchmaking/v1/ready-check/accept")
+
+    def champion_select_session_get(self):
+        return self.get("/lol-champ-select/v1/session")
+
+    def champion_select_action_patch(self, action_id, champion_id):
+        return self.patch(f"/lol-champ-select/v1/session/actions/{action_id}", {"championId": champion_id})
+
+    def champion_select_action_complete(self, action_id):
+        return self.post(f"/lol-champ-select/v1/session/actions/{action_id}/complete")
